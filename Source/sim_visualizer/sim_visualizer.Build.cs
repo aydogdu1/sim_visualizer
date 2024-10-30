@@ -8,9 +8,9 @@ public class sim_visualizer : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "RHI", "RenderCore", "SlateCore"  });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "RHI", "RenderCore",  "Networking", "Sockets" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate" });
+
 		
 		if (Target.bBuildEditor)
 		{
