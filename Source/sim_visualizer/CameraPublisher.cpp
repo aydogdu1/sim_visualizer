@@ -100,6 +100,8 @@ void CamRenderTarget::WriteToShmMemo(){
 		{
 			RenderTargetResource->ReadPixels(ColorBuffer);
 			uint8 frameBuffer[ShmSize];
+			//ShmMemo = frameBuffer;
+			
 
 			//performans için kesinlikle kapanması lazım burasının
 			// DebugMessage = TEXT("captured frame number: ") + FString::FromInt(LastFrame.ColorBuffer.Num());
@@ -141,8 +143,8 @@ UCameraPublisher::UCameraPublisher()
 void UCameraPublisher::BeginPlay()
 {
 	Super::BeginPlay();
-	InitShmMemo();
-	StartFrameGrab();
+	// InitShmMemo();
+	// StartFrameGrab();
 	leftCamRenderTarget.Initialize(LeftCamRenderTarget2D, FString("/leftCam"));
 	//DiscoverCameraComponents();
 	
@@ -156,54 +158,54 @@ void UCameraPublisher::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	//if'e bakıp fonksiyonlara baksak daha optimize olabilir, function call overheadinden kurtuluyoruz. (ya da kendisini sonlandıran bir
 	// time callbacki en hızlı olan olacaktır)
 
-	StartFrameGrab();
-	InitShmMemo();
+	// StartFrameGrab();
+	// InitShmMemo();
 
 	//bu tick işini çoklu threade alıp hızlandırmayı deneyebilirsin
 	leftCamRenderTarget.Initialize(LeftCamRenderTarget2D, FString("/leftCam"));
 	leftCamRenderTarget.WriteToShmMemo();
 
 
-	FString DebugMessage;
+	// FString DebugMessage;
 
 	// DebugMessage = TEXT("Tick:  ") + FString::FromInt(FrameGrabber.IsValid());
 	// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *DebugMessage);
 
-	if (FrameGrabber.IsValid() and shmMemoReady){
-		FrameGrabber->CaptureThisFrame(FFramePayloadPtr());
-		TArray<FCapturedFrameData> Frames = FrameGrabber->GetCapturedFrames();
+	// if (FrameGrabber.IsValid() and shmMemoReady){
+	// 	FrameGrabber->CaptureThisFrame(FFramePayloadPtr());
+	// 	TArray<FCapturedFrameData> Frames = FrameGrabber->GetCapturedFrames();
 
-		// DebugMessage = TEXT("captured frame: ") + FString::FromInt(Frames.Last().ColorBuffer.Num());
-		// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *DebugMessage);
+	// 	// DebugMessage = TEXT("captured frame: ") + FString::FromInt(Frames.Last().ColorBuffer.Num());
+	// 	// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *DebugMessage);
 
-		//shared memoya yazacak şekilde arraye dönüştür
-		if (Frames.Num())
-		{
-			FCapturedFrameData& LastFrame = Frames.Last();
+	// 	//shared memoya yazacak şekilde arraye dönüştür
+	// 	if (Frames.Num())
+	// 	{
+	// 		FCapturedFrameData& LastFrame = Frames.Last();
 
-			uint8 frameBuffer[LastFrame.ColorBuffer.Num()*4];
+	// 		uint8 frameBuffer[LastFrame.ColorBuffer.Num()*4];
 
-			//performans için kesinlikle kapanması lazım burasının
-			// DebugMessage = TEXT("captured frame number: ") + FString::FromInt(LastFrame.ColorBuffer.Num());
-			// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *DebugMessage);
+	// 		//performans için kesinlikle kapanması lazım burasının
+	// 		// DebugMessage = TEXT("captured frame number: ") + FString::FromInt(LastFrame.ColorBuffer.Num());
+	// 		// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *DebugMessage);
 
-			for (int32 i = 0; i < LastFrame.ColorBuffer.Num(); i++)
-			{
+	// 		for (int32 i = 0; i < LastFrame.ColorBuffer.Num(); i++)
+	// 		{
 
-				frameBuffer[(i*4) + 0] = LastFrame.ColorBuffer[i].B;
-				frameBuffer[(i*4) + 1] = LastFrame.ColorBuffer[i].G;
-				frameBuffer[(i*4) + 2] = LastFrame.ColorBuffer[i].R;
-				frameBuffer[(i*4) + 3] = LastFrame.ColorBuffer[i].A;
-			}
+	// 			frameBuffer[(i*4) + 0] = LastFrame.ColorBuffer[i].B;
+	// 			frameBuffer[(i*4) + 1] = LastFrame.ColorBuffer[i].G;
+	// 			frameBuffer[(i*4) + 2] = LastFrame.ColorBuffer[i].R;
+	// 			frameBuffer[(i*4) + 3] = LastFrame.ColorBuffer[i].A;
+	// 		}
 
-			// //shared memoya bas TODO: timestamp de basılmalı latency için
-			memcpy(ShmMemo, frameBuffer, sizeof(frameBuffer));
+	// 		// //shared memoya bas TODO: timestamp de basılmalı latency için
+	// 		memcpy(ShmMemo, frameBuffer, sizeof(frameBuffer));
 
-			//TODO: okuyacak processe sinyal yollayabilirsin callback tarzı senkronlamak için
+	// 		//TODO: okuyacak processe sinyal yollayabilirsin callback tarzı senkronlamak için
 
-		}
+	// 	}
 
-	}
+	// }
 }
 
 
@@ -357,8 +359,8 @@ void UCameraPublisher::ReleaseFrameGrabber()
 
 void UCameraPublisher::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	ReleaseFrameGrabber();
-	DeInitShmMemo();
+	// ReleaseFrameGrabber();
+	// DeInitShmMemo();
 	leftCamRenderTarget.deInitialize();
     Super::EndPlay(EndPlayReason);
 }

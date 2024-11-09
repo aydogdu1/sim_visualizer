@@ -128,6 +128,7 @@ private:
 	bool shmMemoReady = false;
 	bool fGrabReady = false;
 
+
 	// SWindow* GameWindow;
 	// FTexture2DRHIRef GameTexture;
 
